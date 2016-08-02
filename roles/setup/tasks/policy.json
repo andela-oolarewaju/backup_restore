@@ -1,0 +1,13 @@
+{
+	"Version": "2012-10-17",
+	"Id": "PutObjPolicy",
+	"Statement": [
+		{
+			"Sid": "DenyIncorrectEncryptionHeader",
+			"Effect": "Allow",
+			"Principal": {"AWS": "arn:aws:iam::345435789932:user/orezi"},
+			"Action": "*",
+			"Resource": "arn:aws:s3:::orezi_backup_restore/*"
+		}
+	]
+}
