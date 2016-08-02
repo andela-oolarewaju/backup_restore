@@ -18,6 +18,5 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 #
 # m h  dom mon dow   command
-* 10 * * * root /usr/sbin/automysqlbackup /etc/default/automysqlbackup
-2 10 * * * root rsync -av --delete /var/lib/automysqlbackup/daily/ /home/ubuntu/sqlbackup/
-3 10 * * * root /usr/local/bin/aws s3 mv /home/ubuntu/sqlbackup/ s3://orezi_backup_restore/ --recursive
+30 12 * * * root {{automysqlbackup_path.stdout}} /etc/default/automysqlbackup
+31 12 * * * root {{aws_path.stdout}} s3 mv /var/lib/automysqlbackup/daily/ s3://{{s3_website_domain}}/ --recursive

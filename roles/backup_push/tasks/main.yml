@@ -1,14 +1,13 @@
 ---
-- name: check if backup directory exists
-  command: bash -c "ls {{ansible_env.PWD}} | grep {{ backup_dir }}"
-  register: dir_exists
-  ignore_errors: true
+- name: get path for automysqlbackup
+  command: bash -c "which automysqlbackup"
+  register: automysqlbackup_path
   tags:
     - crontab
 
-- name: create backup directory
-  file: path={{ansible_env.PWD}}/{{ backup_dir }} state=directory mode=0755
-  when: dir_exists|failed
+- name: get path for aws
+  command: bash -c "which aws"
+  register: aws_path
   tags:
     - crontab
 
