@@ -18,4 +18,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 #
 # m h  dom mon dow   command
-46 23 * * * root /home/ubuntu/confirm_backups.sh
+48 1 * * * root /home/ubuntu/confirm_backups.sh

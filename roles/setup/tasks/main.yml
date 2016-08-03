@@ -112,6 +112,7 @@
 - name: check if s3 bucket exists
   command: bash -c "aws s3 ls {{s3_website_domain}}"
   register: bucket_exists
+  ignore_errors: true
   tags:
     - find_bucket
     - create_bucket

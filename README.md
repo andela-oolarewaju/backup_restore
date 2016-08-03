@@ -26,11 +26,11 @@ This file **SHOULD NOT** be public
 
 Look in the ```roles/backup_push/templates/backup``` and  ```roles/confirm_backup/templates/confirm_backup``` to 
 
-your daily backup time.
+change your daily backup time.
 
 Fill in your machine's public ip address and the path to your private key in the ```inventory.ini``` file
 
-**RUN** `ansible-playbook -i inventory.ini playbook.yml`
+**RUN** `ansible-playbook -i inventory.ini playbook.main.yml`
 
 **TO TEST**
 cd into features/install.steps.rb
