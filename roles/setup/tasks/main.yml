@@ -12,8 +12,6 @@
     - setup
     - automysqlbackup
 
-
-
 - name: Install automysqlbackup
   apt: name=automysqlbackup state=latest
   when: automysqlbackup_exists|failed
