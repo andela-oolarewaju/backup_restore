@@ -1,2 +1,2 @@
 vars.yml
-step_definitions/vars.rb
+features/step_definitions/vars.rb
