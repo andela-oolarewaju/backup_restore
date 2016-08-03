@@ -111,7 +111,15 @@
     - setup_aws_account
     - setup
 
+- name: check if s3 bucket exists
+  command: bash -c "aws s3 ls {{s3_website_domain}}"
+  register: bucket_exists
+  tags:
+    - find_bucket
+    - create_bucket
+
 - name: create bucket
+  when: bucket_exists|failed
   s3_bucket:
     aws_access_key: "{{ aws_access_key_id }}"
     aws_secret_key: "{{ aws_secret_access_key }}"
@@ -119,4 +127,3 @@
     policy: "{{ lookup('file','policy.json') }}"
   tags:
     - create_bucket
-    - setup

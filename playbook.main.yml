@@ -8,3 +8,4 @@
   roles:
   - setup
   - backup_push
+  - confirm_backup

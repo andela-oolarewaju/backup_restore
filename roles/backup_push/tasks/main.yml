@@ -3,15 +3,34 @@
   command: bash -c "which automysqlbackup"
   register: automysqlbackup_path
   tags:
-    - crontab
+    - copy_backup_script
 
 - name: get path for aws
   command: bash -c "which aws"
   register: aws_path
   tags:
-    - crontab
+    - copy_backup_script
+    - copy_confirm_script
+
+- name: check if system backup file exists
+  command: bash -c "ls {{ansible_env.PWD}} | grep sysbackup"
+  register: file_exists
+  ignore_errors: true
+  tags:
+    - backup_file
+
+- name: create backup file
+  file: path={{ansible_env.PWD}}/sysbackup state=directory
+  when: file_exists|failed
+  tags:
+    - backup_file
 
 - name: Copy cron tab file to /etc/cron.d directory
-  template: src=sqlbackup dest=/etc/cron.d
+  template: src=backup dest=/etc/cron.d
   tags:
-    - crontab
+    - copy_cron_file
+
+- name: Copy backup script to /home/ubuntu directory
+  template: src=backup.sh dest={{ansible_env.PWD}} mode=0774
+  tags:
+    - copy_backup_script
