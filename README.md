@@ -19,6 +19,18 @@ region: ""
 output: ""
 s3_website_domain: ""
 folder_to_backup: ""
+db_to_backup: ""
+sql_username: ""
+sql_password: ""
+db_backup_name: ""
+
+#Cron job time to run backups:
+
+min: "" #minute of the hour 
+hr: "" #hour of the day
+dom: "" #day of the month
+mon: "" #month
+dow: "" #day of the week
 
 ```
 
