@@ -19,6 +19,16 @@
     - setup
     - automysqlbackup
 
+- name: edit automysqlbackup config file
+  lineinfile:
+    dest: /etc/default/automysqlbackup
+    state: present
+    regexp: "^CREATE_DATABASE=yes$"
+    line: "CREATE_DATABASE=no"
+  tags:
+    - automysqlbackup
+    - setup
+
 - name: Check if rsync is installed
   command: bash -c "dpkg --get-selections | grep rsync"
   register: rsync_exists

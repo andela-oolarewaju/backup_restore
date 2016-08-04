@@ -4,6 +4,7 @@ Feature: Backup and restore database
     When I setup machine
     Then it should be successful
     And automysqlbackup should exist
+    And automysqlbackup config file should be edited
     And rsync should exist
     And pip should exist
     And boto should exist
@@ -16,6 +17,11 @@ Feature: Backup and restore database
     When I create S3 bucket
     Then it should be successful
     And S3 bucket should exist
+  
+  Scenario: Install mysql workbecnh
+    When I install mysql workbench
+    Then it should be successful
+    And mysqlworkbench should exist
 
   Scenario: Create backup directory
     When I create sysbackup directory
@@ -31,24 +37,5 @@ Feature: Backup and restore database
     When I create backup script
     Then it should be successful
     And backup.sh script should exist
-
-  Scenario: Create restore directory
-    When I create restore directory
-    Then it should be successful
-    And restore directory should exist
-
-  Scenario: Create restore cron job
-    When I add confirm_backup crontab file
-    Then it should be successful
-    And confirm_backup job should exist
-
-  Scenario: Create restore script
-    When I create confirm_backups script
-    Then it should be successful
-    And confirm_backups.sh script should exist
-
-  Scenario: Confirming backups
-    When I check for difference in backup and source directory
-    Then it should be successful
-    And exit code should be 0
+ 
     

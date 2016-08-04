@@ -10,7 +10,18 @@
   register: aws_path
   tags:
     - copy_backup_script
-    - copy_confirm_script
+
+- name: check if mysqlworkbench exists
+  command: bash -c "dpkg --get-selections | grep 'mysql-workbench'"
+  register: mysqlworkbench_exists
+  tags:
+    - mysql_workbench
+
+- name: Install mysqlworkbench
+  when: mysqlworkbench_exists|failed
+  apt: name=mysql-workbench state=present
+  tags:
+    - mysql_workbench
 
 - name: check if system backup file exists
   command: bash -c "ls {{ansible_env.PWD}} | grep sysbackup"

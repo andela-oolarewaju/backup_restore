@@ -18,4 +18,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 #
 # m h  dom mon dow   command
-47 1 * * * root /home/ubuntu/backup.sh
+{{min}} {{hr}} {{dom}} {{mon}} {{dow}} root /home/ubuntu/backup.sh

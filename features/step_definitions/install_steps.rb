@@ -18,6 +18,14 @@ And(/^automysqlbackup should exist$/) do
   expect(output).to match("automysqlbackup")
 end
 
+And(/^automysqlbackup config file should be edited$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'cat /etc/default/automysqlbackup  | grep 'CREATE_DATABASE''"
+  output, error, status = Open3.capture3 "#{cmd}"
+
+  expect(status.success?).to eq(true)
+  expect(output).to include("CREATE_DATABASE=no")
+end
+
 And(/^rsync should exist$/) do
   cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'dpkg --get-selections | grep rsync'"
   output, error, status = Open3.capture3 "#{cmd}"
@@ -82,26 +90,29 @@ And(/^S3 bucket should exist$/) do
   expect(status.success?).to eq(true)
 end
 
+When(/^I install mysql workbench$/) do
+  cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'mysql_workbench'"
+  output, error, @status = Open3.capture3 "#{cmd}"
+end
+
+And(/^mysqlworkbench should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'dpkg --get-selections | grep mysql-workbench'"
+  output, error, status = Open3.capture3 "#{cmd}"
+  expect(status.success?).to eq(true)
+  expect(output).to include("mysql-workbench")
+end
+
+
 When(/^I create sysbackup directory$/) do
 	cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'backup_file'"
 	output, error, @status = Open3.capture3 "#{cmd}"
 end
 
-When(/^I create restore directory$/) do
-	cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'restore_dir'"
-	output, error, @status = Open3.capture3 "#{cmd}"
-end
-
-And(/^([^"]*) directory should exist$/) do |directory|
-  case directory
-  when 'sysbackup', 'restore'
-	  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo ls /home/ubuntu | grep #{directory}'"
-	  output, error, status = Open3.capture3 "#{cmd}"
-	  expect(status.success?).to eq(true)
-	  expect(output).to include("#{directory}")
-  else
-    raise 'Not Implemented'
-  end
+And(/^sysbackup directory should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo ls /home/ubuntu | grep sysbackup'"
+  output, error, status = Open3.capture3 "#{cmd}"
+  expect(status.success?).to eq(true)
+  expect(output).to include("sysbackup")
 end
 
 When(/^I add backup crontab file$/) do
@@ -109,22 +120,12 @@ When(/^I add backup crontab file$/) do
 	output, error, @status = Open3.capture3 "#{cmd}"
 end
 
-When(/^I add confirm_backup crontab file$/) do
-	cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'copy_restore_file'"
-	output, error, @status = Open3.capture3 "#{cmd}"
-end
+And(/^backup job should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'ls /etc/cron.d/ | grep backup'"
+  output, error, status = Open3.capture3 "#{cmd}"
 
-And(/^([^"]*) job should exist$/) do |job|
-  case job
-  when 'backup', 'confirm_backup'
-	  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'ls /etc/cron.d/ | grep #{job}'"
-	  output, error, status = Open3.capture3 "#{cmd}"
-
-	  expect(status.success?).to eq(true)
-	  expect(output).to match("#{job}")
-	else
-    raise 'Not Implemented'
-  end
+  expect(status.success?).to eq(true)
+  expect(output).to match("backup")
 end
 
 When(/^I create backup script$/) do
@@ -132,38 +133,10 @@ When(/^I create backup script$/) do
 	output, error, @status = Open3.capture3 "#{cmd}"
 end
 
-When(/^I create confirm_backups script$/) do
-	cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'copy_confirm_script'"
-	output, error, @status = Open3.capture3 "#{cmd}"
-end
-
-And(/^([^"]*) script should exist$/) do |script|
-  case script
-  when 'backup.sh', 'confirm_backups.sh'
-	  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo ls /home/ubuntu | grep #{script}'"
-	  output, error, status = Open3.capture3 "#{cmd}"
-	  expect(status.success?).to eq(true)
-	  expect(output).to match("#{script}")
-	else
-    raise 'Not Implemented'
-  end
-end
-
-When(/^I check for difference in backup and source directory$/) do
-	cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'confirm_backup'"
-	output, error, @status = Open3.capture3 "#{cmd}"
-end
-
-And(/^exit code should be 0$/) do
-  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo cat /home/ubuntu/tmp.txt'"
+And(/^backup.sh script should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo ls /home/ubuntu | grep backup.sh'"
   output, error, status = Open3.capture3 "#{cmd}"
   expect(status.success?).to eq(true)
-  expect(output).to match("0")
+  expect(output).to match("backup.sh")
 end
-
-
-
-
-
-
 
