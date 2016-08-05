@@ -133,6 +133,6 @@
     aws_access_key: "{{ aws_access_key_id }}"
     aws_secret_key: "{{ aws_secret_access_key }}"
     name: "{{ s3_website_domain }}"
-    policy: "{{ lookup('file','policy.json') }}"
+    policy: "{{ s3_bucket_policy | to_json }}"
   tags:
     - create_bucket
