@@ -23,6 +23,21 @@ db_to_backup: ""
 sql_username: ""
 sql_password: ""
 db_backup_name: ""
+aws_user_arn: ""  #12345544444:user/yourusername
+s3_bucket_policy: |
+  {
+    "Version": "2012-10-17",
+    "Id": "PutObjPolicy",
+    "Statement": [
+      {
+        "Sid": "DenyIncorrectEncryptionHeader",
+        "Effect": "Allow",
+        "Principal": {"AWS": "arn:aws:iam::{{ aws_user_arn }}"},
+        "Action": "*",
+        "Resource": "arn:aws:s3:::{{s3_website_domain}}/*"
+      }
+    ]
+  }
 
 #Cron job time to run backups:
 
