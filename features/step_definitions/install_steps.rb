@@ -90,16 +90,16 @@ And(/^S3 bucket should exist$/) do
   expect(status.success?).to eq(true)
 end
 
-When(/^I install mysql workbench$/) do
-  cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'mysql_workbench'"
+When(/^I install mysql-utilities$/) do
+  cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'mysql_utilities'"
   output, error, @status = Open3.capture3 "#{cmd}"
 end
 
-And(/^mysqlworkbench should exist$/) do
-  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'dpkg --get-selections | grep mysql-workbench'"
+And(/^mysql-utilities should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'dpkg --get-selections | grep mysql-utilities'"
   output, error, status = Open3.capture3 "#{cmd}"
   expect(status.success?).to eq(true)
-  expect(output).to include("mysql-workbench")
+  expect(output).to include("mysql-utilities")
 end
 
 

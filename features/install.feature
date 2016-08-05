@@ -18,10 +18,10 @@ Feature: Backup and restore database
     Then it should be successful
     And S3 bucket should exist
   
-  Scenario: Install mysql workbecnh
-    When I install mysql workbench
+  Scenario: Install mysql-utilities
+    When I install mysql-utilities
     Then it should be successful
-    And mysqlworkbench should exist
+    And mysql-utilities should exist
 
   Scenario: Create backup directory
     When I create sysbackup directory
