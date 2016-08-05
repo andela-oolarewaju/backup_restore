@@ -11,17 +11,18 @@
   tags:
     - copy_backup_script
 
-- name: check if mysqlworkbench exists
-  command: bash -c "dpkg --get-selections | grep 'mysql-workbench'"
-  register: mysqlworkbench_exists
+- name: check if mysql-utilities exists
+  command: bash -c "dpkg --get-selections | grep 'mysql-utilities'"
+  register: mysqlutilities_exists
+  ignore_errors: true
   tags:
-    - mysql_workbench
+    - mysql_utilities
 
-- name: Install mysqlworkbench
-  when: mysqlworkbench_exists|failed
-  apt: name=mysql-workbench state=present
+- name: Install mysql-utilities
+  when: mysqlutilities_exists|failed
+  apt: name=mysql-utilities state=latest
   tags:
-    - mysql_workbench
+    - mysql_utilities
 
 - name: check if system backup file exists
   command: bash -c "ls {{ansible_env.PWD}} | grep sysbackup"
