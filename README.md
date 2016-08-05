@@ -23,6 +23,7 @@ db_to_backup: ""
 sql_username: ""
 sql_password: ""
 db_backup_name: ""
+encryption_password: "" #password to use to encrypt and decrypt backup (do not forget this)
 aws_user_arn: ""  #12345544444:user/yourusername
 s3_bucket_policy: |
   {

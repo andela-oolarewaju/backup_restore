@@ -1,6 +1,6 @@
 #!/bin/bash
 #backup of important data
-set -ex
+set -e
 
 TIME=`date +%b-%d-%y`            # get date to add to file name
 FILENAME=server-config-backup-$TIME.tar.gz    # define backup name format.
@@ -17,12 +17,15 @@ tar -cpzf $DESDIR/$FILENAME $SRCDIR #backup srcdir to desdir/filename
 tar -xvzf $DESDIR/$FILENAME -C {{ansible_env.PWD}}
 
 diff -r --no-dereference {{folder_to_backup}}/ {{ansible_env.PWD}}{{folder_to_backup}}/
+GPG="$(which gpg)" #get absolute path for gpg
 OUT=$?
-if [ $OUT -eq 0 ]; then 
-  {{aws_path.stdout}} s3 mv $DESDIR/ s3://{{s3_website_domain}}/ --recursive #push desdir/filename to aws s3 bucket
+if [ $OUT -eq 0 ]; then
+  $GPG -c --passphrase {{encryption_password}} $DESDIR/* #encrypt backup 
+  {{aws_path.stdout}} s3 mv $DESDIR/*.gpg s3://{{s3_website_domain}}/ #push desdir/filename to aws s3 bucket
   rm -rf $DESDIR/* {{ansible_env.PWD}}{{folder_to_backup}}/
   echo "success"
 else
+	rm -rf $DESDIR/ {{ansible_env.PWD}}{{folder_to_backup}}/
 	echo "fail"
 	exit 1
 fi
@@ -48,12 +51,14 @@ $MYSQL -u $SQLUSERNAME -p"${SQLPASSWORD}" $DB_BACKUP < /var/lib/automysqlbackup/
 
 $DBCOMPARE --server1=${SQLUSERNAME}:${SQLPASSWORD}@127.0.0.1 $DB:$DB_BACKUP --run-all-tests > /home/ubuntu/results.log
 COMPARE=$?
-if [ $COMPARE -eq 0 ]; then 
+if [ $COMPARE -eq 0 ]; then  
 	gzip /var/lib/automysqlbackup/daily/$DB/${DUMP}
-  {{aws_path.stdout}} s3 mv /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz s3://{{s3_website_domain}}/
+	$GPG -c --passphrase {{encryption_password}} /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz #encrypt backup
+  {{aws_path.stdout}} s3 mv /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz.gpg s3://{{s3_website_domain}}/
   rm -rf /var/lib/automysqlbackup/*
   echo "success"
 else
+	rm -rf /var/lib/automysqlbackup/*
 	echo "fail"
 	exit 1
 fi
