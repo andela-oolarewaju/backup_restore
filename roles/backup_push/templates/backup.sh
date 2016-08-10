@@ -4,7 +4,6 @@ set -e
 
 TIME=`date +%b-%d-%y`            # get date to add to file name
 FILENAME=server-config-backup-$TIME.tar.gz    # define backup name format.
-SRCDIR=/etc                    #foler to backup.
 DESDIR=/home/ubuntu/sysbackup    # destination of backup
 DB={{db_to_backup}}
 SQLUSERNAME={{sql_username}}
@@ -12,7 +11,7 @@ SQLPASSWORD={{sql_password}}
 DB_BACKUP={{db_backup_name}}
 
 #start backup of /etc folder
-tar -cpzf $DESDIR/$FILENAME $SRCDIR #backup srcdir to desdir/filename
+tar -cpzf $DESDIR/$FILENAME {{folder_to_backup}} #backup srcdir to desdir/filename
 
 tar -xvzf $DESDIR/$FILENAME -C {{ansible_env.PWD}}
 

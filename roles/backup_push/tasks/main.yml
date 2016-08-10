@@ -24,14 +24,14 @@
   tags:
     - mysql_utilities
 
-- name: check if system backup file exists
+- name: check if system backup folder exists
   command: bash -c "ls {{ansible_env.PWD}} | grep sysbackup"
   register: file_exists
   ignore_errors: true
   tags:
     - backup_file
 
-- name: create backup file
+- name: create backup folder
   file: path={{ansible_env.PWD}}/sysbackup state=directory
   when: file_exists|failed
   tags:
