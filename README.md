@@ -35,7 +35,12 @@ s3_bucket_policy: |
         "Effect": "Allow",
         "Principal": {"AWS": "arn:aws:iam::{{ aws_user_arn }}"},
         "Action": "*",
-        "Resource": "arn:aws:s3:::{{s3_website_domain}}/*"
+        "Resource": "arn:aws:s3:::{{s3_website_domain}}/*",
+        "Condition": {
+          "StringNotEquals": {
+            "s3:x-amz-server-side-encryption": "AES256"
+          }
+        }
       }
     ]
   }
@@ -58,7 +63,7 @@ change your daily backup time.
 
 Fill in your machine's public ip address and the path to your private key in the ```inventory.ini``` file
 
-**RUN** `ansible-playbook -i inventory.ini playbook.main.yml`
+**RUN** `ansible-playbook -i inventory.ini playbook.main.yml --tags 'setup_backup'`
 
 **TO TEST**
 cd into features/install.steps.rb
@@ -71,3 +76,7 @@ BUCKETNAME = "" #awsbucketname
 ```
 
 **Then RUN** cucumber featuers/install.feature
+
+**TO RESTORE DATABASE FROM LATEST BACKUP ON S3**
+
+**RUN** `ansible-playbook -i inventory.ini playbook.main.yml --tags 'restore_db'`
