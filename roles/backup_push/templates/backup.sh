@@ -35,14 +35,14 @@ fi
 {{automysqlbackup_path.stdout}} /etc/default/automysqlbackup  #create sql dump of database
 
 #define raw sql commands
-Q1="CREATE DATABASE $DB_BACKUP;"
+Q1="CREATE DATABASE IF NOT EXISTS $DB_BACKUP;"
 Q2="DROP DATABASE $DB_BACKUP;"
 MYSQL="$(which mysql)" #get absolute path for mysql
 DBCOMPARE="$(which mysqldbcompare)" #get absolute path for mysqldbcompare
 
 BACKUP="$(ls /var/lib/automysqlbackup/daily/$DB/ -1t | head -1)"   #get the last modified daily backup file
 gunzip "/var/lib/automysqlbackup/daily/$DB/${BACKUP}" #unzip the last modified backup file
-$MYSQL -u $SQLUSERNAME -p"${SQLPASSWORD}" -e "${Q1}" #drop backup db if exists and recreate backup db
+$MYSQL -u $SQLUSERNAME -p"${SQLPASSWORD}" -e "${Q1}" #create backup db
 
 DUMP="$(ls /var/lib/automysqlbackup/daily/$DB/ -1t | head -1)" #get dump file
 
@@ -51,15 +51,15 @@ $MYSQL -u $SQLUSERNAME -p"${SQLPASSWORD}" $DB_BACKUP < /var/lib/automysqlbackup/
 $DBCOMPARE --server1=${SQLUSERNAME}:${SQLPASSWORD}@127.0.0.1 $DB:$DB_BACKUP --run-all-tests > /home/ubuntu/results.log
 COMPARE=$?
 if [ $COMPARE -eq 0 ]; then  
-	gzip /var/lib/automysqlbackup/daily/$DB/${DUMP}
-	$GPG -c --passphrase {{encryption_password}} /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz #encrypt backup
+  gzip /var/lib/automysqlbackup/daily/$DB/${DUMP}
+  $GPG -c --passphrase {{encryption_password}} /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz #encrypt backup
   {{aws_path.stdout}} s3 mv /var/lib/automysqlbackup/daily/$DB/${DUMP}.gz.gpg s3://{{s3_website_domain}}/
   rm -rf /var/lib/automysqlbackup/*
   echo "success"
 else
-	rm -rf /var/lib/automysqlbackup/*
-	echo "fail"
-	exit 1
+  rm -rf /var/lib/automysqlbackup/*
+  echo "fail"
+  exit 1
 fi
 $MYSQL -u $SQLUSERNAME -p"${SQLPASSWORD}" -e "${Q2}"
 echo "finished script..."
