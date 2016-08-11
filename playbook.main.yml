@@ -6,5 +6,6 @@
   vars_files:
     - "vars.yml"
   roles:
-  - setup
-  - backup_push
+  - { role: setup, tags: setup_backup}
+  - { role: backup_push, tags: setup_backup}
+  - { role: restore_database, tags: restore_db}
