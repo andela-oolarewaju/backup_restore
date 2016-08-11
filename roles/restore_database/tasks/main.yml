@@ -1,0 +1,4 @@
+- name: Copy restore script to /home/ubuntu directory
+  template: src=restore.sh dest={{ansible_env.PWD}} mode=0774
+  tags:
+    - copy_restore_script
