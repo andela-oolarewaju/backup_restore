@@ -140,3 +140,15 @@ And(/^backup.sh script should exist$/) do
   expect(output).to match("backup.sh")
 end
 
+When(/^I create restore script$/) do
+  cmd = "ansible-playbook -i inventory.ini playbook.main.yml --tags 'copy_restore_script'"
+  output, error, @status = Open3.capture3 "#{cmd}"
+end
+
+And(/^restore.sh script should exist$/) do
+  cmd = "ssh -i '#{PATHTOPRIVATEKEY}' #{PUBDNS} 'sudo ls /home/ubuntu | grep restore.sh'"
+  output, error, status = Open3.capture3 "#{cmd}"
+  expect(status.success?).to eq(true)
+  expect(output).to match("restore.sh")
+end
+

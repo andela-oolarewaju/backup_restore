@@ -38,4 +38,8 @@ Feature: Backup and restore database
     Then it should be successful
     And backup.sh script should exist
  
-    
+  Scenario: Create restore script
+    When I create restore script
+    Then it should be successful
+    And restore.sh script should exist
+ 
